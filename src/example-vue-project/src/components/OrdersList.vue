@@ -39,7 +39,7 @@ export default {
           throw new Error('Failed to fetch orders');
         }
         const data = await response.json();
-        orders.value = data.data;
+        orders.value = data;
       } catch (error) {
         console.error('Error fetching orders:', error);
       }
