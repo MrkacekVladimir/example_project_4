@@ -1,5 +1,8 @@
 
 using ExampleProject4.Infrastructure;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace ExampleProject4.WebApi
 {
@@ -8,6 +11,20 @@ namespace ExampleProject4.WebApi
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            //Pøíprava pro autentizaci pomocí JWT
+            byte[] jwtSecret = Encoding.UTF8.GetBytes("saldùkfjaslùkfjaslùdkfjlùasjfùlaskdjflùkasjflùsakjflksadjflùsakjfslùdakjfaùl");
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters()
+                    {
+                        ValidAudience = "authenticated",
+                        ValidateIssuer = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(jwtSecret),
+                        ValidateLifetime = true
+                    };
+                });
 
             //Registrace databázového kontextu
             builder.Services.AddDbContext<ExampleDbContext>();

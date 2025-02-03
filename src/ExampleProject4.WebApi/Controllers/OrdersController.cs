@@ -1,7 +1,6 @@
 ﻿using ExampleProject4.Core.Entities;
 using ExampleProject4.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
-using Org.BouncyCastle.Asn1.Mozilla;
 
 namespace ExampleProject4.WebApi.Controllers
 {
@@ -15,8 +14,6 @@ namespace ExampleProject4.WebApi.Controllers
         {
             this.dbContext = dbContext;
         }
-
-
 
         [HttpGet]
         public ActionResult<List<Order>> GetAllOrders()
