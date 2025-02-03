@@ -1,4 +1,6 @@
 
+using ExampleProject4.Infrastructure;
+
 namespace ExampleProject4.WebApi
 {
     public class Program
@@ -7,8 +9,10 @@ namespace ExampleProject4.WebApi
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
+            //Registrace databázového kontextu
+            builder.Services.AddDbContext<ExampleDbContext>();
 
+            //Povolení requestù z jiné aplikace KROK 1.
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowAll", policy =>
@@ -21,25 +25,28 @@ namespace ExampleProject4.WebApi
             });
 
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+            //Registrace služeb pro Swagger (API dokumentace)
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
+            //Swagger povolíme pouze pøi vývoji (lze zmìnit)
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
 
+            //Povolení requestù z jiné aplikace KROK 2.
             app.UseCors("AllowAll");
 
             app.UseHttpsRedirection();
 
+            //Zapneme autentizaci (kdo jsme?) a potom autorizaci (jaké máme práva/role?)
+            app.UseAuthentication();
             app.UseAuthorization();
-
 
             app.MapControllers();
 

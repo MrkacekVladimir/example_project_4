@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ExampleProject4.Core.Shared;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -14,6 +15,9 @@ namespace ExampleProject4.Core.Entities
         [Key]
         [Column("Id")]
         public int Id { get; set; }
+
+        [Column("Status")]
+        public OrderStatus Status { get; set; }
 
         [Column("CreatedOn")]
         public DateTime CreatedOn { get; set; }

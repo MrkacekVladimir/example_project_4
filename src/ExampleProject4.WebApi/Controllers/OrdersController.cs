@@ -1,20 +1,42 @@
 ﻿using ExampleProject4.Core.Entities;
+using ExampleProject4.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
+using Org.BouncyCastle.Asn1.Mozilla;
 
 namespace ExampleProject4.WebApi.Controllers
 {
-    public class OrdersController : Controller
+    [ApiController]
+    [Route("/api/orders")]
+    public class OrdersController : ControllerBase
     {
-        [HttpGet("/orders")]
-        public IActionResult GetAllOrders()
-        {
-            //Vytvářím fake data
-            List<Order> orders = new List<Order>();
-            orders.Add(new Order() { Id = 1, CreatedOn = DateTime.Now});
-            orders.Add(new Order() { Id = 2, CreatedOn = DateTime.Now});
-            orders.Add(new Order() { Id = 3, CreatedOn = DateTime.Now});
+        private readonly ExampleDbContext dbContext;
 
-            return Json(orders);
+        public OrdersController(ExampleDbContext dbContext)
+        {
+            this.dbContext = dbContext;
         }
+
+
+
+        [HttpGet]
+        public ActionResult<List<Order>> GetAllOrders()
+        {
+            List<Order> orders = dbContext.Orders.ToList();
+
+            return orders;
+        }
+
+        [HttpGet("{orderId:int}/items")]
+        public ActionResult<List<OrderItem>> GetOrderItemsByOrderId(int orderId)
+        {
+            List<OrderItem> orderItems = dbContext.OrderItems
+                .Where(oi => oi.OrderId == orderId)
+                .ToList();
+
+            return orderItems;
+        }
+
+
+
     }
 }
