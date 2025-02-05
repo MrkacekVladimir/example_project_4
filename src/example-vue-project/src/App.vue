@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import OrdersList from './components/OrdersList.vue';
+import { RouterView } from 'vue-router';
 </script>
 
 <template>
-  <OrdersList />
+  <main>
+    <RouterView/>
+  </main>
 </template>
 
 <style scoped>

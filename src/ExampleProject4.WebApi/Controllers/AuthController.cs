@@ -14,12 +14,21 @@ public record GetTokenResponse(string Token);
 [Route("/api/auth")]
 public class AuthController: ControllerBase
 {
+    private readonly IConfiguration _configuration;
+    public AuthController(IConfiguration configuration)
+    {
+        _configuration = configuration;
+    }
+
     [HttpPost("token")]
     public ActionResult<GetTokenResponse> GetToken(LoginModel model)
     {
         if (model.Username == "admin" && model.Password == "admin") 
         {
-            byte[] jwtSecret = Encoding.UTF8.GetBytes("saldůkfjaslůkfjaslůdkfjlůasjfůlaskdjflůkasjflůsakjflksadjflůsakjfslůdakjfaůl");
+            var secret = _configuration.GetValue<string>("Jwt:Secret");
+            var audience = _configuration.GetValue<string>("Jwt:Audience");
+            var issuer = _configuration.GetValue<string>("Jwt:Issuer");
+            byte[] jwtSecret = Encoding.UTF8.GetBytes(secret);
             var key = new SymmetricSecurityKey(jwtSecret);
 
             List<Claim> claims = new List<Claim>();
@@ -29,6 +38,8 @@ public class AuthController: ControllerBase
             var tokenDescriptor = new SecurityTokenDescriptor()
             {
                 Subject = new ClaimsIdentity(claims),
+                Audience = audience,
+                Issuer = issuer,
                 Expires = DateTime.UtcNow.AddMinutes(1),
                 SigningCredentials = credentials
             };
@@ -36,10 +47,21 @@ public class AuthController: ControllerBase
             JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler();
             SecurityToken token = handler.CreateToken(tokenDescriptor);
             GetTokenResponse response = new GetTokenResponse(handler.WriteToken(token));
-            return response;
+
+            CookieOptions developmentOptions = new CookieOptions()
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.None,
+                Domain = "localhost"
+            };
+
+            HttpContext.Response.Cookies.Append("Authorization", response.Token, developmentOptions);
+
+            return Ok(response);
         }
 
-        return null;
+        return BadRequest();
     }
 
     [Authorize]

@@ -23,45 +23,36 @@
   </div>
 </template>
 
-<script>
-import { ref, onMounted } from 'vue';
+<script setup lang="tsx">
+import { ref, onMounted } from "vue";
 
-export default {
-  name: 'OrdersList',
-  setup() {
-    const orders = ref([]);
+const orders = ref([] as any[]);
 
-    // Function to fetch orders
-    const fetchOrders = async () => {
-      try {
-        const response = await fetch('https://localhost:7271/api/orders');
-        if (!response.ok) {
-          throw new Error('Failed to fetch orders');
-        }
-        const data = await response.json();
-        orders.value = data;
-      } catch (error) {
-        console.error('Error fetching orders:', error);
-      }
-    };
-
-    // Function to format dates
-    const formatDate = (dateString) => {
-      const date = new Date(dateString);
-      return date.toLocaleString();
-    };
-
-    // Fetch orders on component mount
-    onMounted(() => {
-      fetchOrders();
-    });
-
-    return {
-      orders,
-      formatDate,
-    };
-  },
+// Function to fetch orders
+const fetchOrders = async () => {
+  try {
+    const response = await fetch('https://localhost:7271/api/orders');
+    if (!response.ok) {
+      throw new Error('Failed to fetch orders');
+    }
+    const data = await response.json();
+    orders.value = data;
+  } catch (error) {
+    console.error('Error fetching orders:', error);
+  }
 };
+
+// Function to format dates
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+  return date.toLocaleString();
+};
+
+// Fetch orders on component mount
+onMounted(() => {
+  fetchOrders();
+});
+
 </script>
 
 <style scoped>
@@ -70,7 +61,8 @@ table {
   border-collapse: collapse;
 }
 
-th, td {
+th,
+td {
   border: 1px solid #ddd;
   padding: 8px;
   text-align: left;
@@ -84,4 +76,3 @@ td {
   background-color: #fafafa;
 }
 </style>
-
