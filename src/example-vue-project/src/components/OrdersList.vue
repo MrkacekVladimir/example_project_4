@@ -31,7 +31,9 @@ const orders = ref([] as any[]);
 // Function to fetch orders
 const fetchOrders = async () => {
   try {
-    const response = await fetch('https://localhost:7271/api/orders');
+    const response = await fetch('https://localhost:7271/api/orders', {
+      credentials: "include"
+    });
     if (!response.ok) {
       throw new Error('Failed to fetch orders');
     }

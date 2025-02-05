@@ -1,5 +1,6 @@
 ﻿using ExampleProject4.Core.Entities;
 using ExampleProject4.Infrastructure;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExampleProject4.WebApi.Controllers
@@ -15,6 +16,7 @@ namespace ExampleProject4.WebApi.Controllers
             this.dbContext = dbContext;
         }
 
+        [Authorize]
         [HttpGet]
         public ActionResult<List<Order>> GetAllOrders()
         {

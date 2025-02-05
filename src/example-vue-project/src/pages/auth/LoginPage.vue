@@ -10,9 +10,9 @@
         </div>
         <div>
             <button type="submit">Login</button>
+            <button type="button" v-on:click="handleMe">Get Me Info</button>
         </div>
     </form>
-    <button v-on:click="handleMe">Get Me Info</button>
 </template>
 
 <script setup lang="tsx">
@@ -87,5 +87,9 @@ button {
 }
 button:hover {
     background-color: #0056b3;
+}
+
+button[type="submit"] {
+    margin-bottom: 8px;
 }
 </style>
