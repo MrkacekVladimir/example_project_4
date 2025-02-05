@@ -23,45 +23,45 @@ public class AuthController: ControllerBase
     [HttpPost("token")]
     public ActionResult<GetTokenResponse> GetToken(LoginModel model)
     {
-        if (model.Username == "admin" && model.Password == "admin") 
+        if (model.Username != "admin" && model.Password != "admin")
         {
-            var secret = _configuration.GetValue<string>("Jwt:Secret");
-            var audience = _configuration.GetValue<string>("Jwt:Audience");
-            var issuer = _configuration.GetValue<string>("Jwt:Issuer");
-            byte[] jwtSecret = Encoding.UTF8.GetBytes(secret);
-            var key = new SymmetricSecurityKey(jwtSecret);
-
-            List<Claim> claims = new List<Claim>();
-            claims.Add(new Claim(ClaimTypes.Role, "admin"));
-
-            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var tokenDescriptor = new SecurityTokenDescriptor()
-            {
-                Subject = new ClaimsIdentity(claims),
-                Audience = audience,
-                Issuer = issuer,
-                Expires = DateTime.UtcNow.AddMinutes(1),
-                SigningCredentials = credentials
-            };
-
-            JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler();
-            SecurityToken token = handler.CreateToken(tokenDescriptor);
-            GetTokenResponse response = new GetTokenResponse(handler.WriteToken(token));
-
-            CookieOptions developmentOptions = new CookieOptions()
-            {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.None,
-                Domain = "localhost"
-            };
-
-            HttpContext.Response.Cookies.Append("Authorization", response.Token, developmentOptions);
-
-            return Ok(response);
+            return BadRequest();
         }
+        var secret = _configuration.GetValue<string>("Jwt:Secret");
+        var audience = _configuration.GetValue<string>("Jwt:Audience");
+        var issuer = _configuration.GetValue<string>("Jwt:Issuer");
+        byte[] jwtSecret = Encoding.UTF8.GetBytes(secret);
+        var key = new SymmetricSecurityKey(jwtSecret);
 
-        return BadRequest();
+        List<Claim> claims = new List<Claim>();
+        claims.Add(new Claim(JwtRegisteredClaimNames.Sub, "123456"));
+        claims.Add(new Claim(ClaimTypes.Role, "superadmin"));
+
+        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        var tokenDescriptor = new SecurityTokenDescriptor()
+        {
+            Subject = new ClaimsIdentity(claims),
+            Audience = audience,
+            Issuer = issuer,
+            Expires = DateTime.UtcNow.AddMinutes(1),
+            SigningCredentials = credentials
+        };
+
+        JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler();
+        SecurityToken token = handler.CreateToken(tokenDescriptor);
+        GetTokenResponse response = new GetTokenResponse(handler.WriteToken(token));
+
+        CookieOptions developmentOptions = new CookieOptions()
+        {
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.None,
+            Domain = "localhost"
+        };
+
+        HttpContext.Response.Cookies.Append("Authorization", response.Token, developmentOptions);
+
+        return Ok(response);
     }
 
     [Authorize]
